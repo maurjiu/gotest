@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"gopkg.in/telegram-bot-api.v4"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -28,7 +29,7 @@ var buttons = []tgbotapi.KeyboardButton{
 }
 
 // При старте приложения, оно скажет телеграму ходить с обновлениями по этому URL
-const WebhookURL = "https://shrouded-brushlands-23470.herokuapp.com/"
+const WebhookURL = "https://msu-go-2017.herokuapp.com/"
 
 func getJoke() string {
 	c := http.Client{}
@@ -52,7 +53,7 @@ func getJoke() string {
 func main() {
 	// Heroku прокидывает порт для приложения в переменную окружения PORT
 	port := os.Getenv("PORT")
-	bot, err := tgbotapi.NewBotAPI("983913996:AAHCW5Z-bz7KWeeK8V5u0T_e3FU8Puk9ttY")
+	bot, err := tgbotapi.NewBotAPI("270497469:AAFBnCofRqpaZIcBD_Re2N5aVbTcvWe8XDw")
 	if err != nil {
 		log.Fatal(err)
 	}

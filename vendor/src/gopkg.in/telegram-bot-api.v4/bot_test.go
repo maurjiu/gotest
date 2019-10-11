@@ -1,33 +1,29 @@
 package tgbotapi_test
 
 import (
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"testing"
 	"time"
-
-	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 const (
-	TestToken               = "153667468:AAHlSHlMqSt1f_uFmVRJbm5gntu2HI4WW8I"
-	ChatID                  = 76918703
-	SupergroupChatID        = -1001120141283
-	ReplyToMessageID        = 35
-	ExistingPhotoFileID     = "AgADAgADw6cxG4zHKAkr42N7RwEN3IFShCoABHQwXEtVks4EH2wBAAEC"
-	ExistingDocumentFileID  = "BQADAgADOQADjMcoCcioX1GrDvp3Ag"
-	ExistingAudioFileID     = "BQADAgADRgADjMcoCdXg3lSIN49lAg"
-	ExistingVoiceFileID     = "AwADAgADWQADjMcoCeul6r_q52IyAg"
-	ExistingVideoFileID     = "BAADAgADZgADjMcoCav432kYe0FRAg"
-	ExistingVideoNoteFileID = "DQADAgADdQAD70cQSUK41dLsRMqfAg"
-	ExistingStickerFileID   = "BQADAgADcwADjMcoCbdl-6eB--YPAg"
+	TestToken              = "153667468:AAHlSHlMqSt1f_uFmVRJbm5gntu2HI4WW8I"
+	ChatID                 = 76918703
+	ReplyToMessageID       = 35
+	ExistingPhotoFileID    = "AgADAgADw6cxG4zHKAkr42N7RwEN3IFShCoABHQwXEtVks4EH2wBAAEC"
+	ExistingDocumentFileID = "BQADAgADOQADjMcoCcioX1GrDvp3Ag"
+	ExistingAudioFileID    = "BQADAgADRgADjMcoCdXg3lSIN49lAg"
+	ExistingVoiceFileID    = "AwADAgADWQADjMcoCeul6r_q52IyAg"
+	ExistingVideoFileID    = "BAADAgADZgADjMcoCav432kYe0FRAg"
+	ExistingStickerFileID  = "BQADAgADcwADjMcoCbdl-6eB--YPAg"
 )
 
 func getBot(t *testing.T) (*tgbotapi.BotAPI, error) {
 	bot, err := tgbotapi.NewBotAPI(TestToken)
-	bot.Debug = true
 
 	if err != nil {
 		t.Error(err)
@@ -315,34 +311,6 @@ func TestSendWithExistingVideo(t *testing.T) {
 	}
 }
 
-func TestSendWithNewVideoNote(t *testing.T) {
-	bot, _ := getBot(t)
-
-	msg := tgbotapi.NewVideoNoteUpload(ChatID, 240, "tests/videonote.mp4")
-	msg.Duration = 10
-
-	_, err := bot.Send(msg)
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
-func TestSendWithExistingVideoNote(t *testing.T) {
-	bot, _ := getBot(t)
-
-	msg := tgbotapi.NewVideoNoteShare(ChatID, 240, ExistingVideoNoteFileID)
-	msg.Duration = 10
-
-	_, err := bot.Send(msg)
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
 func TestSendWithNewSticker(t *testing.T) {
 	bot, _ := getBot(t)
 
@@ -373,10 +341,7 @@ func TestSendWithNewStickerAndKeyboardHide(t *testing.T) {
 	bot, _ := getBot(t)
 
 	msg := tgbotapi.NewStickerUpload(ChatID, "tests/image.jpg")
-	msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{
-		RemoveKeyboard: true,
-		Selective:      false,
-	}
+	msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{true, false}
 	_, err := bot.Send(msg)
 
 	if err != nil {
@@ -389,10 +354,7 @@ func TestSendWithExistingStickerAndKeyboardHide(t *testing.T) {
 	bot, _ := getBot(t)
 
 	msg := tgbotapi.NewStickerShare(ChatID, ExistingStickerFileID)
-	msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{
-		RemoveKeyboard: true,
-		Selective:      false,
-	}
+	msg.ReplyMarkup = tgbotapi.ReplyKeyboardRemove{true, false}
 
 	_, err := bot.Send(msg)
 
@@ -405,7 +367,7 @@ func TestSendWithExistingStickerAndKeyboardHide(t *testing.T) {
 func TestGetFile(t *testing.T) {
 	bot, _ := getBot(t)
 
-	file := tgbotapi.FileConfig{FileID: ExistingPhotoFileID}
+	file := tgbotapi.FileConfig{ExistingPhotoFileID}
 
 	_, err := bot.GetFile(file)
 
@@ -473,10 +435,7 @@ func TestSetWebhookWithCert(t *testing.T) {
 		t.Error(err)
 		t.Fail()
 	}
-	_, err = bot.GetWebhookInfo()
-	if err != nil {
-		t.Error(err)
-	}
+
 	bot.RemoveWebhook()
 }
 
@@ -493,13 +452,7 @@ func TestSetWebhookWithoutCert(t *testing.T) {
 		t.Error(err)
 		t.Fail()
 	}
-	info, err := bot.GetWebhookInfo()
-	if err != nil {
-		t.Error(err)
-	}
-	if info.LastErrorDate != 0 {
-		t.Errorf("[Telegram callback failed]%s", info.LastErrorMessage)
-	}
+
 	bot.RemoveWebhook()
 }
 
@@ -513,20 +466,6 @@ func TestUpdatesChan(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 		t.Fail()
-	}
-}
-
-func TestSendWithMediaGroup(t *testing.T) {
-	bot, _ := getBot(t)
-
-	cfg := tgbotapi.NewMediaGroup(ChatID, []interface{}{
-		tgbotapi.NewInputMediaPhoto("https://i.imgur.com/unQLJIb.jpg"),
-		tgbotapi.NewInputMediaPhoto("https://i.imgur.com/J5qweNZ.jpg"),
-		tgbotapi.NewInputMediaVideo("https://i.imgur.com/F6RmI24.mp4"),
-	})
-	_, err := bot.Send(cfg)
-	if err != nil {
-		t.Error(err)
 	}
 }
 
@@ -544,11 +483,6 @@ func ExampleNewBotAPI() {
 	u.Timeout = 60
 
 	updates, err := bot.GetUpdatesChan(u)
-
-	// Optional: wait for updates and clear them if you don't want to handle
-	// a large backlog of old messages
-	time.Sleep(time.Millisecond * 500)
-	updates.Clear()
 
 	for update := range updates {
 		if update.Message == nil {
@@ -578,13 +512,7 @@ func ExampleNewWebhook() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	info, err := bot.GetWebhookInfo()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if info.LastErrorDate != 0 {
-		log.Printf("[Telegram callback failed]%s", info.LastErrorMessage)
-	}
+
 	updates := bot.ListenForWebhook("/" + bot.Token)
 	go http.ListenAndServeTLS("0.0.0.0:8443", "cert.pem", "key.pem", nil)
 
@@ -624,70 +552,5 @@ func ExampleAnswerInlineQuery() {
 		if _, err := bot.AnswerInlineQuery(inlineConf); err != nil {
 			log.Println(err)
 		}
-	}
-}
-
-func TestDeleteMessage(t *testing.T) {
-	bot, _ := getBot(t)
-
-	msg := tgbotapi.NewMessage(ChatID, "A test message from the test library in telegram-bot-api")
-	msg.ParseMode = "markdown"
-	message, _ := bot.Send(msg)
-
-	deleteMessageConfig := tgbotapi.DeleteMessageConfig{
-		ChatID:    message.Chat.ID,
-		MessageID: message.MessageID,
-	}
-	_, err := bot.DeleteMessage(deleteMessageConfig)
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
-func TestPinChatMessage(t *testing.T) {
-	bot, _ := getBot(t)
-
-	msg := tgbotapi.NewMessage(SupergroupChatID, "A test message from the test library in telegram-bot-api")
-	msg.ParseMode = "markdown"
-	message, _ := bot.Send(msg)
-
-	pinChatMessageConfig := tgbotapi.PinChatMessageConfig{
-		ChatID:              message.Chat.ID,
-		MessageID:           message.MessageID,
-		DisableNotification: false,
-	}
-	_, err := bot.PinChatMessage(pinChatMessageConfig)
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
-func TestUnpinChatMessage(t *testing.T) {
-	bot, _ := getBot(t)
-
-	msg := tgbotapi.NewMessage(SupergroupChatID, "A test message from the test library in telegram-bot-api")
-	msg.ParseMode = "markdown"
-	message, _ := bot.Send(msg)
-
-	// We need pin message to unpin something
-	pinChatMessageConfig := tgbotapi.PinChatMessageConfig{
-		ChatID:              message.Chat.ID,
-		MessageID:           message.MessageID,
-		DisableNotification: false,
-	}
-	_, err := bot.PinChatMessage(pinChatMessageConfig)
-
-	unpinChatMessageConfig := tgbotapi.UnpinChatMessageConfig{
-		ChatID: message.Chat.ID,
-	}
-	_, err = bot.UnpinChatMessage(unpinChatMessageConfig)
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
 	}
 }

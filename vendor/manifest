@@ -10,7 +10,7 @@
 		{
 			"importpath": "gopkg.in/telegram-bot-api.v4",
 			"repository": "https://gopkg.in/telegram-bot-api.v4",
-			"revision": "9860bdfd3a171ceafb6e1eafa163482a6ef92643",
+			"revision": "0a57807db79efce7f6719fbb2c0e0f83fda79aec",
 			"branch": "master"
 		}
 	]
