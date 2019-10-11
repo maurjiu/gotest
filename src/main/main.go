@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"gopkg.in/telegram-bot-api.v4"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	tgbotapi "gopkg.in/telegram-bot-api.v4"
 )
 
 // для вендоринга используется GB
