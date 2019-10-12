@@ -30,7 +30,7 @@ var buttons = []tgbotapi.KeyboardButton{
 }
 
 // При старте приложения, оно скажет телеграму ходить с обновлениями по этому URL
-const WebhookURL = "https://msu-go-2017.herokuapp.com/"
+const WebhookURL = ""
 
 func getJoke() string {
 	c := http.Client{}
@@ -54,7 +54,7 @@ func getJoke() string {
 func main() {
 	// Heroku прокидывает порт для приложения в переменную окружения PORT
 	port := os.Getenv("PORT")
-	bot, err := tgbotapi.NewBotAPI("270497469:AAFBnCofRqpaZIcBD_Re2N5aVbTcvWe8XDw")
+	bot, err := tgbotapi.NewBotAPI("")
 	if err != nil {
 		log.Fatal(err)
 	}
